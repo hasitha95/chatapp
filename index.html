@@ -113,7 +113,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>WhatsApp Chat</h1>
+            <h1>100X Chat</h1>
         </div>
         <div class="chat-messages">
             <!-- Messages will be dynamically added here -->
@@ -125,31 +125,46 @@
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
-        const socket = io();
+    
 
-        const messageInput = document.querySelector('.chat-input input');
-        const sendButton = document.querySelector('.chat-input button');
-        const chatMessages = document.querySelector('.chat-messages');
+<script>
+    const socket = io();
 
-        sendButton.addEventListener('click', () => {
-            const message = messageInput.value;
-            if (message.trim() !== '') {
-                socket.emit('chatMessage', message);
-                messageInput.value = '';
-            }
-        });
+    const messageInput = document.querySelector('.chat-input input');
+    const sendButton = document.querySelector('.chat-input button');
+    const chatMessages = document.querySelector('.chat-messages');
 
-        socket.on('chatMessage', (data) => {
-            const messageContainer = document.createElement('div');
-            messageContainer.className = `message ${data.id === socket.id ? 'outgoing' : 'incoming'}`;
-            messageContainer.innerHTML = `
-                <div class="message-content">
-                    <p>${data.message}</p>
-                </div>
-            `;
-            chatMessages.appendChild(messageContainer);
-        });
-    </script>
+    // Function to send a message
+    const sendMessage = () => {
+        const message = messageInput.value;
+        if (message.trim() !== '') {
+            socket.emit('chatMessage', message);
+            messageInput.value = '';
+        }
+    };
+
+    // Send message when the "Send" button is clicked
+    sendButton.addEventListener('click', sendMessage);
+
+    // Send message when the Enter key is pressed
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default Enter behavior (line break)
+            sendMessage();
+        }
+    });
+
+    socket.on('chatMessage', (data) => {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `message ${data.id === socket.id ? 'outgoing' : 'incoming'}`;
+        messageContainer.innerHTML = `
+            <div class="message-content">
+                <p>${data.message}</p>
+            </div>
+        `;
+        chatMessages.appendChild(messageContainer);
+    });
+</script>
+
 </body>
 </html>
