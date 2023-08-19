@@ -1,2 +1,2 @@
 # chatapp
-Simple Chat App built using ChatGPT
+WhatsApp-Inspired Chat Application Developed with ChatGPT
