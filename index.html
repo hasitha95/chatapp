@@ -3,20 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.io Chat App</title>
+    <style>
+        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.chat-messages {
+    max-height: 400px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+.message {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.incoming {
+    background-color: #f0f0f0;
+    align-self: flex-start;
+}
+
+.outgoing {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+}
+
+.message-content {
+    word-wrap: break-word;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    background-color: #075e54;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+    .chat-container {
+        max-width: 100%;
+    }
+}
+/* Your existing CSS styles */
+
+.message {
+    display: flex;
+    max-width: 80%;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.incoming {
+    background-color: #f0f0f0;
+    align-self: flex-start;
+}
+
+.outgoing {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+}
+
+.message-content {
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Add margin between messages */
+.message + .message {
+    margin-top: 5px;
+}
+
+    </style>
+    <title>Chat Application</title>
 </head>
 <body>
-    <div id="messages"></div>
-    <input id="message" type="text" placeholder="Type your message...">
-    <button id="send">Send</button>
-
-    <script src="/socket.io/socket.io.js"></script>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>WhatsApp Chat</h1>
+        </div>
+        <div class="chat-messages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message...">
+            <button>Send</button>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
         const socket = io();
 
-        const messages = document.getElementById('messages');
-        const messageInput = document.getElementById('message');
-        const sendButton = document.getElementById('send');
+        const messageInput = document.querySelector('.chat-input input');
+        const sendButton = document.querySelector('.chat-input button');
+        const chatMessages = document.querySelector('.chat-messages');
 
         sendButton.addEventListener('click', () => {
             const message = messageInput.value;
@@ -26,10 +140,15 @@
             }
         });
 
-        socket.on('chatMessage', ({ id, message }) => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${id}: ${message}`;
-            messages.appendChild(messageElement);
+        socket.on('chatMessage', (data) => {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message ${data.id === socket.id ? 'outgoing' : 'incoming'}`;
+            messageContainer.innerHTML = `
+                <div class="message-content">
+                    <p>${data.message}</p>
+                </div>
+            `;
+            chatMessages.appendChild(messageContainer);
         });
     </script>
 </body>
